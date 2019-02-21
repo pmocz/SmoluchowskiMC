@@ -78,3 +78,44 @@ xlabel('$x$','interpreter','latex','fontsize',14);
 ylabel('$f(t,x)$','interpreter','latex','fontsize',14);
 axis([0 12 N*1e-6 N*1e1])
 
+
+
+
+%% [Example 2.] alternate case
+
+
+% problem parameters
+a = 5;
+b = 100;
+f0 = @(x) 5e4*x.^-2.35.*(x>5).*(x<50);
+kernel = @(x,y) 0*x*y + 1;
+source = 'none';
+t_out = [0 10 20 40];
+seed = 42;
+
+
+% solve the problem
+tic;
+sol = smolMCsolve(a, b, f0, kernel, source, t_out, seed);
+toc;
+
+N = numel(sol{1});
+
+% plot solution
+fh = figure;
+xbin = linspace(a,b+100,40);
+dxbin = xbin(2) - xbin(1);
+xcenter = 0.5 * (xbin(1:end-1) + xbin(2:end));
+Nt = numel(t_out);
+cc = 1;
+for t = t_out
+    h = histcounts(sol{cc},xbin,'normalization','countdensity');
+    loglog(xcenter, h, 'o-', 'color', [(Nt-cc)/Nt 0 cc/Nt], 'linewidth',2); hold on
+    cc = cc + 1;
+end
+
+
+% figure final touches
+xlabel('$x$','interpreter','latex','fontsize',14);
+ylabel('$f(t,x)$','interpreter','latex','fontsize',14);
+axis([5 200 N*1e-4 N*1e0])
